@@ -1,7 +1,6 @@
 version: 0.0
-
 files:
-  - source:chef
+  - source: chef
     destination: /data/chef
 
 hooks:
