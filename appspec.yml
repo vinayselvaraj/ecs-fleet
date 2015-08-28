@@ -1,9 +1,0 @@
-version: 0.0
-os: linux
-files:
-  - source: chef
-    destination: /data/chef
-
-hooks:
-  AfterInstall:
-    - location: scripts/deploy.sh
