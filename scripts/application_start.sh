@@ -1,3 +1,3 @@
 #!/bin/bash
 
-touch /tmp/application_start2
+touch /tmp/application_start3

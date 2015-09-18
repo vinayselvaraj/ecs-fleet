@@ -1,3 +1,3 @@
 #!/bin/bash
 
-touch /tmp/validate_service2
+touch /tmp/validate_service3
