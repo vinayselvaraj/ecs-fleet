@@ -1,3 +1,3 @@
 #!/bin/bash
 
-touch /tmp/before_install
+touch /tmp/before_install2
