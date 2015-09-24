@@ -23,6 +23,18 @@
   
   "Mappings" : {
     
+    "AWSRegionAZCount" : {
+      "us-east-1"      : { "AZCount" : "4"},
+      "us-west-1"      : { "AZCount" : "2"},
+      "us-west-2"      : { "AZCount" : "3"},
+      "eu-west-1"      : { "AZCount" : "3"},
+      "eu-central-1"   : { "AZCount" : "2"},
+      "sa-east-1"      : { "AZCount" : "3"},
+      "ap-southeast-1" : { "AZCount" : "2"},
+      "ap-southeast-2" : { "AZCount" : "2"},
+      "ap-northeast-1" : { "AZCount" : "2"}
+    },
+    
     "AWSRegionArch2AMI" : {
       "us-east-1"      : { "AMI" : "ami-1ecae776" },
       "us-west-1"      : { "AMI" : "ami-d114f295" },
@@ -33,6 +45,18 @@
       "ap-southeast-1" : { "AMI" : "ami-68d8e93a" },
       "ap-southeast-2" : { "AMI" : "ami-fd9cecc7" },
       "ap-northeast-1" : { "AMI" : "ami-cbf90ecb" }
+    }
+  },
+  
+  "Conditions" : {
+    "ThreeAZs" : { "Fn::Equals" : [{ "Fn::FindInMap" : [ "AWSRegionAZCount", { "Ref" : "AWS::Region" }, "AZCount" ] }, "3" ]},
+    "FourAZs"  : { "Fn::Equals" : [{ "Fn::FindInMap" : [ "AWSRegionAZCount", { "Ref" : "AWS::Region" }, "AZCount" ] }, "4" ]},
+    
+    "ThreeOrMoreAZs" : {
+      "Fn::Or" : [
+        {"Condition" : "ThreeAZs"},
+        {"Condition" : "FourAZs"}
+      ]
     }
   },
   
@@ -92,6 +116,7 @@
     
     "VPCPublicRouteTableAssocSubnetC" : {
       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Condition" : "ThreeAZs",
       "Properties" : {
         "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
         "SubnetId" : { "Ref" : "SubnetC" }
@@ -100,6 +125,7 @@
 
     "VPCPublicRouteTableAssocSubnetD" : {
       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Condition" : "FourAZs",
       "Properties" : {
         "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
         "SubnetId" : { "Ref" : "SubnetD" }
@@ -126,6 +152,7 @@
     
     "SubnetC" : {
       "Type" : "AWS::EC2::Subnet",
+      "Condition" : "ThreeOrMoreAZs",
       "Properties" : {
         "VpcId" : { "Ref" : "VPC" },
         "CidrBlock" : "10.10.3.0/24",
@@ -135,13 +162,14 @@
 
     "SubnetD" : {
       "Type" : "AWS::EC2::Subnet",
+      "Condition" : "FourAZs",
       "Properties" : {
         "VpcId" : { "Ref" : "VPC" },
         "CidrBlock" : "10.10.4.0/24",
         "AvailabilityZone" : { "Fn::Select" : [ "3", { "Fn::GetAZs" : "" } ]}
       }
     },
-    
+
     "VpnIAMRole" : {
       "Type": "AWS::IAM::Role",
       "Properties" : {
@@ -331,12 +359,19 @@
       "Properties" : {
         "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "LaunchConfigurationName" : { "Ref" : "VpnLaunchConfig" },
-        "VPCZoneIdentifier" : [ 
-          { "Ref" : "SubnetA" },
-          { "Ref" : "SubnetB" },
-          { "Ref" : "SubnetC" },
-          { "Ref" : "SubnetD" }
-        ],
+        "VPCZoneIdentifier" : {
+          "Fn::If" : [ 
+            "FourAZs",
+            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
+            {"Fn::If" : [
+              "ThreeAZs",
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
+            ]}
+          ]
+          
+        },
+        
         "MinSize" : "1",
         "MaxSize" : "1",
         "Tags" : [
@@ -480,12 +515,18 @@
       "Properties" : {
         "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "LaunchConfigurationName" : { "Ref" : "ClusterLaunchConfig" },
-        "VPCZoneIdentifier" : [ 
-          { "Ref" : "SubnetA" },
-          { "Ref" : "SubnetB" },
-          { "Ref" : "SubnetC" },
-          { "Ref" : "SubnetD" }
-        ],
+        "VPCZoneIdentifier" : {
+          "Fn::If" : [ 
+            "FourAZs",
+            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
+            {"Fn::If" : [
+              "ThreeAZs",
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
+            ]}
+          ]
+          
+        },
         "MinSize" : "1",
         "MaxSize" : "10",
         "LoadBalancerNames" : [ { "Ref" : "ClusterELB" } ],
@@ -511,12 +552,18 @@
           }
         ],
         
-        "Subnets": [
-          { "Ref" : "SubnetA" },
-          { "Ref" : "SubnetB" },
-          { "Ref" : "SubnetC" },
-          { "Ref" : "SubnetD" }
-        ],
+        "Subnets": {
+          "Fn::If" : [ 
+            "FourAZs",
+            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
+            {"Fn::If" : [
+              "ThreeAZs",
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
+              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
+            ]}
+          ]
+          
+        },
         
         "HealthCheck": {
           "Target": "TCP:80",
