@@ -562,7 +562,6 @@
               [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
             ]}
           ]
-          
         },
         
         "HealthCheck": {
