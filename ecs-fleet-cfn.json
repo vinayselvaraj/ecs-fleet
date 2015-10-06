@@ -469,13 +469,8 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "config" : {
-            "commands" : {
-              "01_fetch_codedeploy_agent" : {
-                "command" : {"Fn::Join" : ["", ["aws s3 cp s3://aws-codedeploy-", { "Ref" : "AWS::Region" }, "/latest/install /tmp --region ", { "Ref" : "AWS::Region" }]]}
-              },
-              "02_run_codedeploy_agent" : {
-                "command" : "chmod +x /tmp/install && /tmp/install auto"
-              }
+            "sources" : {
+              "/root/bootstrap" : "https://github.com/vinayselvaraj/ecs-fleet/tarball/master"
             }
           }
         }
@@ -579,8 +574,13 @@
         
         "CrossZone": "true"
       }
+    },
+    
+    "ECSCluster" : {
+      "Type": "AWS::ECS::Cluster"
     }
     
   }
+  
   
 }
