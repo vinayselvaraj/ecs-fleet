@@ -116,7 +116,7 @@
     
     "VPCPublicRouteTableAssocSubnetC" : {
       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Condition" : "ThreeAZs",
+      "Condition" : "ThreeOrMoreAZs",
       "Properties" : {
         "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
         "SubnetId" : { "Ref" : "SubnetC" }
