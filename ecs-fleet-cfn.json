@@ -281,6 +281,9 @@
         "AWS::CloudFormation::Init" : {
           "config" : {
             "packages" : {
+              "rpm" : {
+                "chefdk" : "https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.9.0-1.el7.x86_64.rpm"
+              },
               "yum" : {
                 "openvpn" : []
               }
@@ -472,6 +475,11 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "config" : {
+            "packages" : {
+              "rpm" : {
+                "chefdk" : "https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.9.0-1.el7.x86_64.rpm"
+              }
+            },
             "sources" : {
               "/root/bootstrap" : "https://github.com/vinayselvaraj/ecs-fleet/tarball/master"
             }
