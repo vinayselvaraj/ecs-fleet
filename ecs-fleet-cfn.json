@@ -447,7 +447,9 @@
                   "ecs:Submit*",
                   "ecs:Poll",
                   "s3:Get*",
-                  "s3:List*"
+                  "s3:List*",
+                  "sqs:Receive*",
+                  "sqs:DeleteMessage"
                 ],
                 "Resource":"*"
               },
