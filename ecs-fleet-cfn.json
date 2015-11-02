@@ -589,10 +589,6 @@
         
         "CrossZone": "true"
       }
-    },
-    
-    "ECSCluster" : {
-      "Type": "AWS::ECS::Cluster"
     }
     
   }
