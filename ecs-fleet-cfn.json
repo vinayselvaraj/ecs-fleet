@@ -449,6 +449,7 @@
                   "s3:Get*",
                   "s3:List*",
                   "s3:PutObject",
+                  "sqs:Send*",
                   "sqs:Receive*",
                   "sqs:DeleteMessage"
                 ],
