@@ -448,6 +448,7 @@
                   "ecs:Poll",
                   "s3:Get*",
                   "s3:List*",
+                  "s3:PutObject",
                   "sqs:Receive*",
                   "sqs:DeleteMessage"
                 ],
