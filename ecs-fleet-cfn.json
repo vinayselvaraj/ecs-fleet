@@ -263,9 +263,6 @@
             "packages" : {
               "rpm" : {
                 "chefdk" : "https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.9.0-1.el7.x86_64.rpm"
-              },
-              "yum" : {
-                "openvpn" : []
               }
             },
             "sources" : {
@@ -297,7 +294,7 @@
                   "openvpn --genkey --secret /etc/openvpn/openvpn-key.txt\n",
                   
                   "# Run chef-solo\n",
-                  "exec /root/bootstrap/chef/run.sh"
+                  "/root/bootstrap/chef/run.sh"
                   
                 ]]},
                 "mode" : "000755",
