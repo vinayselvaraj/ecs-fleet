@@ -297,7 +297,7 @@
                   "openvpn --genkey --secret /etc/openvpn/openvpn-key.txt\n",
                   
                   "# Run chef-solo\n",
-                  "/root/bootstrap/chef/run.sh"
+                  "exec /root/bootstrap/chef/run.sh"
                   
                 ]]},
                 "mode" : "000755",
