@@ -1,4 +1,4 @@
 source "https://supermarket.chef.io"
 
-cookbook 'openvpn', git: 'https://github.com/xhost-cookbooks/openvpn.git'
+cookbook 'openvpn', '~> 2.1.0'
 cookbook 'aws'    , '>= 2.7.2'

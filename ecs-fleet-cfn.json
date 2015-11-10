@@ -289,10 +289,7 @@
                   "do\n",
                   "sleep 15\n",
                   "done\n",
-                  
-                  "#Setup OpenVPN\n",
-                  "openvpn --genkey --secret /etc/openvpn/openvpn-key.txt\n",
-                  
+                                    
                   "# Run chef-solo\n",
                   "/root/bootstrap/chef/run.sh"
                   
