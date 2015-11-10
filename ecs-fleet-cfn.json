@@ -237,34 +237,14 @@
       }
     },
     
-    "VpnSGSelfIngressUdp4500" : {
+    "VpnSGTCPPort443" : {
       "Type" : "AWS::EC2::SecurityGroupIngress",
       "Properties" : {
         "GroupId" : { "Ref" : "VpnSG" },
-        "IpProtocol" : "udp",
-        "ToPort" : "4500",
-        "FromPort" : "4500",
-        "SourceSecurityGroupId" : { "Ref" : "VpnSG" }
-      }
-    },
-    
-    "VpnSGSelfIngressUdp500" : {
-      "Type" : "AWS::EC2::SecurityGroupIngress",
-      "Properties" : {
-        "GroupId" : { "Ref" : "VpnSG" },
-        "IpProtocol" : "udp",
-        "ToPort" : "500",
-        "FromPort" : "500",
-        "SourceSecurityGroupId" : { "Ref" : "VpnSG" }
-      }
-    },
-    
-    "VpnSGSelfIngressIp50" : {
-      "Type" : "AWS::EC2::SecurityGroupIngress",
-      "Properties" : {
-        "GroupId" : { "Ref" : "VpnSG" },
-        "IpProtocol" : "50",
-        "SourceSecurityGroupId" : { "Ref" : "VpnSG" }
+        "IpProtocol" : "tcp",
+        "ToPort" : "443",
+        "FromPort" : "443",
+        "CidrIp" : "0.0.0.0/0"
       }
     },
     
@@ -314,7 +294,10 @@
                   "done\n",
                   
                   "#Setup OpenVPN\n",
-                  "openvpn --genkey --secret /etc/openvpn/openvpn-key.txt\n"
+                  "openvpn --genkey --secret /etc/openvpn/openvpn-key.txt\n",
+                  
+                  "# Run chef-solo\n",
+                  "/root/bootstrap/chef/run.sh"
                   
                 ]]},
                 "mode" : "000755",
