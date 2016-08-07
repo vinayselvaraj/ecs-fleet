@@ -4,370 +4,53 @@
   "Description" : "ECS Cluster CloudFormation Template",
   
   "Parameters" : {
-    "VpnInstanceType" : {
-      "Description" : "VPN Instance Type",
-      "Type" : "String",
-      "Default" : "t2.micro"
-    },
+    
     "ClusterInstanceType" : {
       "Description" : "Cluster Instance Type",
       "Type" : "String",
-      "Default" : "t2.medium"
+      "AllowedValues" : ["t2.micro", "t2.small", "t2.medium", "t2.large"],
+      "Default" : "t2.micro"
     },
+    
     "KeyName" : {
       "Description" : "The EC2 Key Pair to allow SSH access to the instances",
       "Type" : "AWS::EC2::KeyPair::KeyName",
       "Default" : "default"
+    },
+    
+    "VPCId" : {
+      "Description" : "VPC ID to launch cluster in",
+      "Type" : "String"
+    },
+    
+    "VPCSubnets" : {
+      "Description" : "Subnets to launch EC2 instances in",
+      "Type" : "List<AWS::EC2::Subnet::Id>"
     }
+    
   },
   
   "Mappings" : {
     
-    "AWSRegionAZCount" : {
-      "us-east-1"      : { "AZCount" : "4"},
-      "us-west-1"      : { "AZCount" : "2"},
-      "us-west-2"      : { "AZCount" : "3"},
-      "eu-west-1"      : { "AZCount" : "3"},
-      "eu-central-1"   : { "AZCount" : "2"},
-      "sa-east-1"      : { "AZCount" : "3"},
-      "ap-southeast-1" : { "AZCount" : "2"},
-      "ap-southeast-2" : { "AZCount" : "2"},
-      "ap-northeast-1" : { "AZCount" : "2"}
-    },
-    
     "AWSRegionArch2AMI" : {
-      "us-east-1"      : { "AMI" : "ami-1ecae776" },
-      "us-west-1"      : { "AMI" : "ami-d114f295" },
-      "us-west-2"      : { "AMI" : "ami-e7527ed7" },
-      "eu-west-1"      : { "AMI" : "ami-a10897d6" },
-      "eu-central-1"   : { "AMI" : "ami-a8221fb5" },
-      "sa-east-1"      : { "AMI" : "ami-b52890a8" },
-      "ap-southeast-1" : { "AMI" : "ami-68d8e93a" },
-      "ap-southeast-2" : { "AMI" : "ami-fd9cecc7" },
-      "ap-northeast-1" : { "AMI" : "ami-cbf90ecb" }
-    }
-  },
-  
-  "Conditions" : {
-    "ThreeAZs" : { "Fn::Equals" : [{ "Fn::FindInMap" : [ "AWSRegionAZCount", { "Ref" : "AWS::Region" }, "AZCount" ] }, "3" ]},
-    "FourAZs"  : { "Fn::Equals" : [{ "Fn::FindInMap" : [ "AWSRegionAZCount", { "Ref" : "AWS::Region" }, "AZCount" ] }, "4" ]},
-    
-    "ThreeOrMoreAZs" : {
-      "Fn::Or" : [
-        {"Condition" : "ThreeAZs"},
-        {"Condition" : "FourAZs"}
-      ]
+      "us-east-1"      : { "AMI" : "ami-55870742" },
+      "us-west-1"      : { "AMI" : "ami-07713767" },
+      "us-west-2"      : { "AMI" : "ami-241bd844" },
+      "eu-west-1"      : { "AMI" : "ami-c74127b4" },
+      "eu-central-1"   : { "AMI" : "ami-3b54be54" },
+      "ap-southeast-1" : { "AMI" : "ami-6b61bc08" },
+      "ap-southeast-2" : { "AMI" : "ami-d5b59eb6" },
+      "ap-northeast-1" : { "AMI" : "ami-2b08f44a" }
     }
   },
   
   "Resources" : {
     
-    "VPC" : {
-      "Type" : "AWS::EC2::VPC",
-      "Properties" : {
-        "CidrBlock" : "10.10.0.0/16",
-        "EnableDnsHostnames" : "true"
-      }
-    },
-    
-    "IGW" : {
-      "Type" : "AWS::EC2::InternetGateway"
-    },
-    
-    "VPCGatewayAttachment" : {
-      "Type" : "AWS::EC2::VPCGatewayAttachment",
-      "Properties" : {
-        "InternetGatewayId" : { "Ref" : "IGW" },
-        "VpcId" : { "Ref" : "VPC" }
-      }
-    },
-    
-    "VPCPublicSubnetRouteTable" : {
-      "Type" : "AWS::EC2::RouteTable",
-      "Properties" : {
-        "VpcId" : { "Ref" : "VPC" }
-      }
-    },
-    
-    "VPCPublicIGWRoute" : {
-      "Type" : "AWS::EC2::Route",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
-        "GatewayId" : { "Ref" : "IGW"},
-        "DestinationCidrBlock" : "0.0.0.0/0"
-      }
-    },
-    
-    "VPCPublicRouteTableAssocSubnetA" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
-        "SubnetId" : { "Ref" : "SubnetA" }
-      }
-    },
-    
-    "VPCPublicRouteTableAssocSubnetB" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
-        "SubnetId" : { "Ref" : "SubnetB" }
-      }
-    },
-    
-    "VPCPublicRouteTableAssocSubnetC" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Condition" : "ThreeOrMoreAZs",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
-        "SubnetId" : { "Ref" : "SubnetC" }
-      }
-    },
-
-    "VPCPublicRouteTableAssocSubnetD" : {
-      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-      "Condition" : "FourAZs",
-      "Properties" : {
-        "RouteTableId" : { "Ref" : "VPCPublicSubnetRouteTable" },
-        "SubnetId" : { "Ref" : "SubnetD" }
-      }
-    },
-    
-    "SubnetA" : {
-      "Type" : "AWS::EC2::Subnet",
-      "Properties" : {
-        "VpcId" : { "Ref" : "VPC" },
-        "CidrBlock" : "10.10.1.0/24",
-        "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : "" } ]}
-      }
-    },
-    
-    "SubnetB" : {
-      "Type" : "AWS::EC2::Subnet",
-      "Properties" : {
-        "VpcId" : { "Ref" : "VPC" },
-        "CidrBlock" : "10.10.2.0/24",
-        "AvailabilityZone" : { "Fn::Select" : [ "1", { "Fn::GetAZs" : "" } ]}
-      }
-    },
-    
-    "SubnetC" : {
-      "Type" : "AWS::EC2::Subnet",
-      "Condition" : "ThreeOrMoreAZs",
-      "Properties" : {
-        "VpcId" : { "Ref" : "VPC" },
-        "CidrBlock" : "10.10.3.0/24",
-        "AvailabilityZone" : { "Fn::Select" : [ "2", { "Fn::GetAZs" : "" } ]}
-      }
-    },
-
-    "SubnetD" : {
-      "Type" : "AWS::EC2::Subnet",
-      "Condition" : "FourAZs",
-      "Properties" : {
-        "VpcId" : { "Ref" : "VPC" },
-        "CidrBlock" : "10.10.4.0/24",
-        "AvailabilityZone" : { "Fn::Select" : [ "3", { "Fn::GetAZs" : "" } ]}
-      }
-    },
-
-    "VpnIAMRole" : {
-      "Type": "AWS::IAM::Role",
-      "Properties" : {
-        "AssumeRolePolicyDocument" : {
-          "Version" : "2012-10-17",
-          "Statement" : [ {
-            "Effect" : "Allow",
-            "Principal" : {
-              "Service" : [ "ec2.amazonaws.com" ]
-            },
-            "Action" : [ "sts:AssumeRole" ]
-          }]
-        },
-        
-        "Path" : "/",
-        
-        "Policies" : [ {
-          "PolicyName" : "VpnServerPolicy",
-          "PolicyDocument" : {
-            "Version" : "2012-10-17",
-            "Statement" : [
-              {
-                "Effect":"Allow",
-                "Action": [
-                  "ec2:AssociateAddress",
-                  "ec2:DisassociateAddress"
-                ],
-                "Resource":"*"
-              },
-              {
-                "Effect":"Deny",
-                "Action":"iam:*",
-                "Resource":"*"
-              }
-            ]
-          }
-        }]
-      }
-    },
-    
-    "VpnInstProfile" : {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Properties" : {
-        "Path" : "/",
-        "Roles" : [ { "Ref" : "VpnIAMRole" } ]
-      }
-    },
-    
-    "VpnSG" : {
-      "Type" : "AWS::EC2::SecurityGroup",
-      "Properties" : {
-        "GroupDescription" : "VPN Security Group",
-        "VpcId" : { "Ref" : "VPC" }
-      }
-    },
-    
-    "VpnSGSelfIngress" : {
-      "Type" : "AWS::EC2::SecurityGroupIngress",
-      "Properties" : {
-        "GroupId" : { "Ref" : "VpnSG" },
-        "IpProtocol" : "-1",
-        "ToPort" : "65535",
-        "FromPort" : "0",
-        "SourceSecurityGroupId" : { "Ref" : "VpnSG" }
-      }
-    },
-    
-    "VpnSGTCPPort443" : {
-      "Type" : "AWS::EC2::SecurityGroupIngress",
-      "Properties" : {
-        "GroupId" : { "Ref" : "VpnSG" },
-        "IpProtocol" : "tcp",
-        "ToPort" : "443",
-        "FromPort" : "443",
-        "CidrIp" : "0.0.0.0/0"
-      }
-    },
-    
-    "VpnEip" : {
-      "Type" : "AWS::EC2::EIP",
-      "Properties" : {
-        "Domain" : "vpc"
-      }
-    },
-    
-    "VpnLaunchConfig" : {
-      "Type" : "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata" : {
-        "AWS::CloudFormation::Init" : {
-          "config" : {
-            "packages" : {
-              "rpm" : {
-                "chefdk" : "https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.9.0-1.el7.x86_64.rpm"
-              }
-            },
-            "sources" : {
-              "/root/bootstrap" : "https://github.com/vinayselvaraj/ecs-fleet/tarball/master"
-            },
-            "files" : {
-              "/tmp/associate_eip.sh" : {
-                "content" : { "Fn::Join" : ["", [
-                  "#!/bin/bash\n",
-                  "INSTANCE_ID=`curl -s  http://169.254.169.254/latest/meta-data/instance-id`\n",
-                  "ALLOCATION_ID=", { "Fn::GetAtt" : [ "VpnEip", "AllocationId" ]}, "\n",
-                  "EC2_REGION=", { "Ref": "AWS::Region"}, "\n",
-                  "aws ec2 --region $EC2_REGION associate-address --allocation-id $ALLOCATION_ID --instance-id $INSTANCE_ID --allow-reassociation\n"
-                ]]},
-                "mode" : "000755",
-                "owner" : "root",
-                "group" : "root"
-              },
-              "/tmp/setup.sh" : {
-                "content" : { "Fn::Join" : ["", [
-                  "#!/bin/bash\n",
-                  
-                  "until /tmp/associate_eip.sh\n",
-                  "do\n",
-                  "sleep 15\n",
-                  "done\n",
-                                    
-                  "# Run chef-solo\n",
-                  "/root/bootstrap/chef/run.sh"
-                  
-                ]]},
-                "mode" : "000755",
-                "owner" : "root",
-                "group" : "root"
-              }
-            },
-            "commands" : {
-              "runSetup" : {
-                "command" : "/tmp/setup.sh"
-              }
-            }
-          }
-        }
-      },
-      "Properties" : {
-        "KeyName" : { "Ref" : "KeyName" },
-        "AssociatePublicIpAddress" : "true",
-        "IamInstanceProfile" : { "Ref" : "VpnInstProfile" },
-        "ImageId" : {
-          "Fn::FindInMap" : [
-            "AWSRegionArch2AMI",
-            { "Ref" : "AWS::Region" },
-            "AMI"
-          ]
-        },
-        "InstanceType" : { "Ref" : "VpnInstanceType" },
-        "SecurityGroups" : [ { "Ref" : "VpnSG" } ],
-        "UserData"        : {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash\n",
-                "/opt/aws/bin/cfn-init --region ", 
-                  { "Ref": "AWS::Region"}, 
-                  " -s ", { "Ref" : "AWS::StackName" }, 
-                  " -r VpnLaunchConfig"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    
-    "VpnAutoScalingGroup" : {
-      "Type" : "AWS::AutoScaling::AutoScalingGroup",
-      "Properties" : {
-        "AvailabilityZones" : { "Fn::GetAZs" : "" },
-        "LaunchConfigurationName" : { "Ref" : "VpnLaunchConfig" },
-        "VPCZoneIdentifier" : {
-          "Fn::If" : [ 
-            "FourAZs",
-            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
-            {"Fn::If" : [
-              "ThreeAZs",
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
-            ]}
-          ]
-          
-        },
-        
-        "MinSize" : "1",
-        "MaxSize" : "1",
-        "Tags" : [
-          { "Key" : "Name", "Value" : "vpn-server", "PropagateAtLaunch" : "true" }
-        ]
-      }
-    },
-    
     "ClusterSG" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Cluster Security Group",
-        "VpcId" : { "Ref" : "VPC" }
+        "VpcId" : { "Ref" : "VPCId" }
       }
     },
     
@@ -379,17 +62,6 @@
         "ToPort" : "65535",
         "FromPort" : "0",
         "SourceSecurityGroupId" : { "Ref" : "ClusterSG" }
-      }
-    },
-    
-    "ClusterSGVpnIngress" : {
-      "Type" : "AWS::EC2::SecurityGroupIngress",
-      "Properties" : {
-        "GroupId" : { "Ref" : "ClusterSG" },
-        "IpProtocol" : "-1",
-        "ToPort" : "65535",
-        "FromPort" : "0",
-        "SourceSecurityGroupId" : { "Ref" : "VpnSG" }
       }
     },
     
@@ -469,7 +141,6 @@
       },
       "Properties" : {
         "KeyName" : { "Ref" : "KeyName" },
-        "AssociatePublicIpAddress" : "true",
         "IamInstanceProfile" : { "Ref" : "ClusterInstProfile" },
         "ImageId" : {
           "Fn::FindInMap" : [
@@ -486,6 +157,7 @@
               "",
               [
                 "#!/bin/bash\n",
+                "yum -y install aws-cfn-bootstrap\n",
                 "/opt/aws/bin/cfn-init --region ", 
                   { "Ref": "AWS::Region"}, 
                   " -s ", { "Ref" : "AWS::StackName" }, 
@@ -500,20 +172,8 @@
     "ClusterAutoScalingGroup" : {
       "Type" : "AWS::AutoScaling::AutoScalingGroup",
       "Properties" : {
-        "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "LaunchConfigurationName" : { "Ref" : "ClusterLaunchConfig" },
-        "VPCZoneIdentifier" : {
-          "Fn::If" : [ 
-            "FourAZs",
-            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
-            {"Fn::If" : [
-              "ThreeAZs",
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
-            ]}
-          ]
-          
-        },
+        "VPCZoneIdentifier" : { "Ref" : "VPCSubnets" },
         "MinSize" : "1",
         "MaxSize" : "10",
         "LoadBalancerNames" : [ { "Ref" : "ClusterELB" } ],
@@ -531,25 +191,10 @@
             "LoadBalancerPort" : "80",
             "InstancePort": "80",
             "Protocol": "TCP"
-          },
-          {
-            "LoadBalancerPort" : "443",
-            "InstancePort": "443",
-            "Protocol": "TCP"
           }
         ],
         
-        "Subnets": {
-          "Fn::If" : [ 
-            "FourAZs",
-            [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }, { "Ref" : "SubnetD" } ],
-            {"Fn::If" : [
-              "ThreeAZs",
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }, { "Ref" : "SubnetC" }],
-              [ { "Ref" : "SubnetA" }, { "Ref" : "SubnetB" }]
-            ]}
-          ]
-        },
+        "Subnets": { "Ref" : "VPCSubnets" },
         
         "HealthCheck": {
           "Target": "TCP:80",
