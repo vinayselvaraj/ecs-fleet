@@ -46,6 +46,10 @@
   
   "Resources" : {
     
+    "ECSCluster" : {
+      "Type" : "AWS::ECS::Cluster"
+    },
+    
     "ClusterSG" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
@@ -128,13 +132,15 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "config" : {
-            "packages" : {
-              "rpm" : {
-                "chefdk" : "https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.9.0-1.el7.x86_64.rpm"
+            "files" : {
+              "/etc/ecs/ecs.config" : {
+                "content" : { "Fn::Join" : ["", [
+                  "ECS_CLUSTER=", { "Ref" : "ECSCluster" }
+                ]]},
+                "mode" : "000644",
+                "owner" : "root",
+                "group" : "root"
               }
-            },
-            "sources" : {
-              "/root/bootstrap" : "https://github.com/vinayselvaraj/ecs-fleet/tarball/master"
             }
           }
         }
@@ -183,6 +189,17 @@
       }
     },
     
+    "ClusterELBSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Cluster Security Group",
+        "VpcId" : { "Ref" : "VPCId" },
+        "SecurityGroupIngress" : [{
+          "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"
+        }]
+      }
+    },
+    
     "ClusterELB" : {
       "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties" : {
@@ -195,6 +212,7 @@
         ],
         
         "Subnets": { "Ref" : "VPCSubnets" },
+        "SecurityGroups" : [ { "Ref" : "ClusterELBSecurityGroup" } ],
         
         "HealthCheck": {
           "Target": "TCP:80",
