@@ -54,7 +54,10 @@
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Cluster Security Group",
-        "VpcId" : { "Ref" : "VPCId" }
+        "VpcId" : { "Ref" : "VPCId" },
+        "SecurityGroupIngress" : [{
+          "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupId" : { "Ref" : "ClusterELBSecurityGroup"}
+        }]
       }
     },
     
