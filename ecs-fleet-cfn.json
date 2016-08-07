@@ -26,6 +26,12 @@
     "VPCSubnets" : {
       "Description" : "Subnets to launch EC2 instances in",
       "Type" : "List<AWS::EC2::Subnet::Id>"
+    },
+    
+    "ClusterInstanceCount" : {
+      "Description" : "Number of EC2 instances in the cluster",
+      "Type" : "Number",
+      "Default" : "3"
     }
     
   },
@@ -135,6 +141,7 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "config" : {
+            
             "files" : {
               "/etc/ecs/ecs.config" : {
                 "content" : { "Fn::Join" : ["", [
@@ -144,7 +151,12 @@
                 "owner" : "root",
                 "group" : "root"
               }
+            },
+            
+            "commands" : {
+              "yum-update" : { "command" : "yum -y update" }
             }
+            
           }
         }
       },
@@ -183,8 +195,8 @@
       "Properties" : {
         "LaunchConfigurationName" : { "Ref" : "ClusterLaunchConfig" },
         "VPCZoneIdentifier" : { "Ref" : "VPCSubnets" },
-        "MinSize" : "1",
-        "MaxSize" : "10",
+        "MinSize" : { "Ref" : "ClusterInstanceCount" },
+        "MaxSize" : { "Ref" : "ClusterInstanceCount" },
         "LoadBalancerNames" : [ { "Ref" : "ClusterELB" } ],
         "Tags" : [
           { "Key" : "Name", "Value" : "ecs-cluster", "PropagateAtLaunch" : "true" }
