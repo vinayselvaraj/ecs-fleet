@@ -7,7 +7,7 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   checkStackExists(CONFIG_STACK_NAME)
+   checkStackExists(env.CONFIG_STACK_NAME)
    
 }
 
