@@ -1,6 +1,3 @@
-import com.amazonaws.regions.Region
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.cloudformation.AmazonCloudFormationClient
 
 node {
 
@@ -12,7 +9,10 @@ node {
    // Create/Update Stack stage
    stage 'Create/Update Stack'
    if(checkStackExists()) {
-     echo "Stack ${STACK_NAME}"
+     echo "Stack ${STACK_NAME} exists.  Will attempt to update it"
+     updateStack()
+   } else {
+     createStack()
    }
    
 }
@@ -24,6 +24,17 @@ def checkStackExists() {
     return true
   } catch(Exception e) {
     return false
-  }
-  
+  }  
+}
+
+def createStack() {
+  createUpdateStack("create-stack")
+}
+
+def updateStack() {
+  createUpdateStack("update-stack")
+}
+
+def createUpdateStack(op) {
+  sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ${STACK_NAME} --template-body file://`pwd`/${STACK_TEMPLATE_FILE} --parameters file://`pwd`/${STACK_PARAMETER_FILE}"
 }
