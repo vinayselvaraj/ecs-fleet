@@ -5,6 +5,6 @@ node {
      checkout scm
    }
    dir('configs') {
-     git url: "${config.git.repo}"
+     git url: "${CONFIG_GIT_REPO}"
    }   
 }
