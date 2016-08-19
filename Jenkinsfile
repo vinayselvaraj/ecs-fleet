@@ -1,4 +1,5 @@
 node {
-   stage 'Source'
-   echo 'Hello World 1'
+   // Checkout stage
+   stage 'Checkout'
+   checkout scm
 }
