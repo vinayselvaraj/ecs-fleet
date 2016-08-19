@@ -11,7 +11,7 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   if(checkStackExists(env.STACK_NAME, env.AWS_REGION)) {
+   if(checkStackExists(${STACK_NAME}, ${AWS_REGION})) {
      echo "Stack ${STACK_NAME}"
    }
    
