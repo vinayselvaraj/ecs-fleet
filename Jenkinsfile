@@ -1,3 +1,7 @@
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.cloudformation.AmazonCloudFormationClient
+
 node {
 
    // Checkout stage
@@ -7,10 +11,11 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   checkStackExists(STACK_NAME)
+   checkStackExists(STACK_NAME, AWS_REGION)
    
 }
 
-def checkStackExists(stackName) {
-  print stackName
+def checkStackExists(stackName, regionName) {
+  def cfnClient = new AmazonCloudFormationClient()
+  cfnClient.setRegion(Region.getRegion(Regions.fromName(regionName)))
 }
