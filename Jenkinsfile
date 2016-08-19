@@ -11,11 +11,12 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   checkStackExists(STACK_NAME, AWS_REGION)
+   if(checkStackExists(STACK_NAME, AWS_REGION)) {
+     echo "Stack ${STACK_NAME} exists!"
+   }
    
 }
 
 def checkStackExists(stackName, regionName) {
-  def cfnClient = new AmazonCloudFormationClient()
-  cfnClient.setRegion(Region.getRegion(Regions.fromName(regionName)))
+  return sh "aws --region ${regionName} cloudformation describe-stacks --stack-name ${stackName}"
 }
