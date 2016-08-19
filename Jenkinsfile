@@ -11,6 +11,6 @@ node {
    
 }
 
-def checkStackExists(def stackName) {
+def checkStackExists(stackName) {
   print stackName
 }
