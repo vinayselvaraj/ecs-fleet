@@ -7,10 +7,10 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   foo()
+   checkStackExists(CONFIG_STACK_NAME)
    
 }
 
-def foo() {
-  print "foo"
+def checkStackExists(def stackName) {
+  print stackName
 }
