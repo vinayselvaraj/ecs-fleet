@@ -18,5 +18,6 @@ node {
 }
 
 def checkStackExists(stackName, regionName) {
+  echo "stackName: ${stackName}, regionName: ${regionName}"
   sh 'aws --region ${regionName} cloudformation describe-stacks --stack-name ${stackName}'
 }
