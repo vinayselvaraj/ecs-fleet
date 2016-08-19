@@ -12,11 +12,11 @@ node {
    // Create/Update Stack stage
    stage 'Create/Update Stack'
    if(checkStackExists(STACK_NAME, AWS_REGION)) {
-     echo "Stack ${STACK_NAME} exists!"
+     echo "Stack ${STACK_NAME}"
    }
    
 }
 
 def checkStackExists(stackName, regionName) {
-  return sh "aws --region ${regionName} cloudformation describe-stacks --stack-name ${stackName}"
+  return sh 'aws --region ${regionName} cloudformation describe-stacks --stack-name ${stackName}'
 }
