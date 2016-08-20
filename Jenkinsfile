@@ -51,6 +51,7 @@ def waitForStackCreateUpdate() {
 }
 
 def isStackCreationInProgress(status) {
+  echo status
   return status.equals("CREATE_IN_PROGRESS") || status.equals("UPDATE_IN_PROGRESS");
 }
 
