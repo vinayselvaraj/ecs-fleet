@@ -44,7 +44,6 @@ def createUpdateStack(op) {
   sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ${STACK_NAME} --template-body file://`pwd`/${STACK_TEMPLATE_FILE} --parameters file://`pwd`/${STACK_PARAMETER_FILE} ${STACK_CREATE_UPDATE_OPTIONS}"
 }
 
-@NonCPS
 def waitForStackCreateUpdate() {
 
   def status = "CREATE_IN_PROGRESS"
@@ -52,16 +51,19 @@ def waitForStackCreateUpdate() {
   while(isStackCreationInProgress(status)) {
     echo "Waiting for stack to complete create/update."
     sleep 60
-    
-    def jsonSlurper = new JsonSlurper()
-    def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
-    print output
-    def jsonObject = jsonSlurper.parseText(output)
-    status = jsonObject.Stacks[0].StackStatus
+    status = getStackStatus()
   }
 }
 
 def isStackCreationInProgress(status) {
   print status
   return status.equals("CREATE_IN_PROGRESS") || status.equals("UPDATE_IN_PROGRESS");
+}
+
+@NonCPS
+def getStackStatus() {
+  def jsonSlurper = new JsonSlurper()
+  def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
+  def jsonObject = jsonSlurper.parseText(output)
+  return jsonObject.Stacks[0].StackStatus
 }
