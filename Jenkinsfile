@@ -20,11 +20,6 @@ node {
    // Wait for stack create/update to complete
    stage 'Verify'
    waitForStackCreateUpdate()
-   
-   while(isStackCreateUpdatePending()) {
-     sleep 60
-     
-   }
 }
 
 def checkStackExists() {
