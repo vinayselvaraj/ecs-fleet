@@ -22,7 +22,7 @@ node {
    stage 'Verify'
    waitForStackCreateUpdate()
    if(!isStackCreationSuccessful(getStackStatus())) {
-     throw new RuntimeException("Stack create/update not successful!")
+     error "Stack create/update failed: " + getStackStatus()
    }
 }
 
