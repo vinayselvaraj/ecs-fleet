@@ -65,7 +65,9 @@ def getStackStatus() {
     def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
     def jsonObject = jsonSlurper.parseText(output)
     status = jsonObject.Stacks[0].StackStatus
-  } catch(Exception e) {}
+  } catch(Exception e) {
+    echo "Stack ${STACK_NAME} does not exist"
+  }
 
   return status
 }
