@@ -21,8 +21,9 @@ node {
    // Wait for stack create/update to complete
    stage 'Verify'
    waitForStackCreateUpdate()
-   if(!isStackCreationSuccessful(getStackStatus())) {
-     error "Stack create/update failed: " + getStackStatus()
+   stackStatus = getStackStatus()
+   if(!isStackCreationSuccessful(stackStatus)) {
+     error "Stack create/update failed: ${stackStatus}"
    }
 }
 
