@@ -10,7 +10,7 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   if(checkStackExists()) {
+   if(getStackStatus() != null) {
      echo "Stack ${STACK_NAME} exists.  Will attempt to update it"
      updateStack()
    } else {
@@ -20,16 +20,9 @@ node {
    // Wait for stack create/update to complete
    stage 'Verify'
    waitForStackCreateUpdate()
-}
-
-def checkStackExists() {
-  echo "stackName: ${STACK_NAME}, regionName: ${AWS_REGION}"
-  try {
-    sh "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}"
-    return true
-  } catch(Exception e) {
-    return false
-  }  
+   if(!isStackCreationSuccessful(getStackStatus())) {
+     throw new RuntimeException("Stack create/update not successful!")
+   }
 }
 
 def createStack() {
@@ -56,14 +49,23 @@ def waitForStackCreateUpdate() {
 }
 
 def isStackCreationInProgress(status) {
-  print status
   return status.equals("CREATE_IN_PROGRESS") || status.equals("UPDATE_IN_PROGRESS");
+}
+
+def isStackCreationSuccessful(status) {
+  return status.equals("CREATE_COMPLETE") || status.equals("UPDATE_COMPLETE") || status.equals("UPDATE_COMPLETE_CLEANUP_IN_PROGRESS")
 }
 
 @NonCPS
 def getStackStatus() {
-  def jsonSlurper = new JsonSlurper()
-  def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
-  def jsonObject = jsonSlurper.parseText(output)
-  return jsonObject.Stacks[0].StackStatus
+  def status = null
+  
+  try {
+    def jsonSlurper = new JsonSlurper()
+    def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
+    def jsonObject = jsonSlurper.parseText(output)
+    status = jsonObject.Stacks[0].StackStatus
+  } catch(Exception e) {}
+
+  return status
 }
