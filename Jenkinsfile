@@ -51,7 +51,7 @@ def isStackCreateUpdatePending() {
   def jsonSlurper = new JsonSlurper()
   def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
   def jsonObject = jsonSlurper.parseText(output)
-  echo jsonObject[0].StackStatus
+  print jsonObject
   
   return false
 }
