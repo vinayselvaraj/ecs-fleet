@@ -46,6 +46,7 @@ def createUpdateStack(op) {
   sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ${STACK_NAME} --template-body file://`pwd`/${STACK_TEMPLATE_FILE} --parameters file://`pwd`/${STACK_PARAMETER_FILE} ${STACK_CREATE_UPDATE_OPTIONS}"
 }
 
+@NonCPS
 def isStackCreateUpdatePending() {
   def jsonSlurper = new JsonSlurper()
   def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
