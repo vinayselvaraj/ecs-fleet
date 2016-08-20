@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import com.amazonaws.services.cloudformation.model.StackStatus
 
 node {
 
@@ -18,9 +19,11 @@ node {
    
    // Wait for stack create/update to complete
    stage 'Verify'
+   waitForStackCreateUpdate()
+   
    while(isStackCreateUpdatePending()) {
      sleep 60
-     echo "Waiting for stack to complete create/update."
+     
    }
 }
 
@@ -47,11 +50,21 @@ def createUpdateStack(op) {
 }
 
 @NonCPS
-def isStackCreateUpdatePending() {
-  def jsonSlurper = new JsonSlurper()
-  def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
-  def jsonObject = jsonSlurper.parseText(output)
-  echo "jsonObject = ${jsonObject}"
+def waitForStackCreateUpdate() {
+
+  def status = "CREATE_IN_PROGRESS"
   
-  return false
+  while(isStackCreationInProgress(status)) {
+    echo "Waiting for stack to complete create/update."
+    sleep 60
+    
+    def jsonSlurper = new JsonSlurper()
+    def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
+    def jsonObject = jsonSlurper.parseText(output)
+    status = jsonObject.Stacks[0].StackStatus
+  }
+}
+
+def isStackCreationInProgress(status) {
+  return status.equals("CREATE_IN_PROGRESS") || status.equals("UPDATE_IN_PROGRESS");
 }
