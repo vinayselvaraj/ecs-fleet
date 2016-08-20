@@ -15,6 +15,12 @@ node {
      createStack()
    }
    
+   // Wait for stack create/update to complete
+   stage 'Verify'
+   while(isStackCreateUpdatePending()) {
+     sleep 60
+     echo "Waiting for stack to complete create/update."
+   }
 }
 
 def checkStackExists() {
@@ -37,4 +43,8 @@ def updateStack() {
 
 def createUpdateStack(op) {
   sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ${STACK_NAME} --template-body file://`pwd`/${STACK_TEMPLATE_FILE} --parameters file://`pwd`/${STACK_PARAMETER_FILE} ${STACK_CREATE_UPDATE_OPTIONS}"
+}
+
+def isStackCreateUpdatePending() {
+  return false
 }
