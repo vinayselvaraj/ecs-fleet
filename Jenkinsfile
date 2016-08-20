@@ -55,6 +55,7 @@ def waitForStackCreateUpdate() {
     
     def jsonSlurper = new JsonSlurper()
     def output = sh(script: "aws --region ${AWS_REGION} cloudformation describe-stacks --stack-name ${STACK_NAME}", returnStdout: true)
+    print output
     def jsonObject = jsonSlurper.parseText(output)
     status = jsonObject.Stacks[0].StackStatus
   }
