@@ -10,10 +10,11 @@ node {
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
-   if(getStackStatus() != null) {
+   try {
+     getStackStatus()
      echo "Stack ${STACK_NAME} exists.  Will attempt to update it"
      updateStack()
-   } else {
+   } catch(Exception e) {
      createStack()
    }
    
