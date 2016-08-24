@@ -1,5 +1,6 @@
 import groovy.json.JsonSlurper
 import com.amazonaws.services.cloudformation.model.StackStatus
+import com.amazonaws.services.cloudformation.AmazonCloudFormationClient
 
 node {
 
@@ -35,7 +36,10 @@ def updateStack() {
 }
 
 def createUpdateStack(op) {
-  sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ecs-fleet-cfn.json --template-body file://`pwd`/${STACK_TEMPLATE_FILE} --parameters file://`pwd`/${STACK_PARAMETER_FILE} ${STACK_CREATE_UPDATE_OPTIONS}"
+
+  def cfn = new AmazonCloudFormationClient()
+
+  sh "aws --region ${AWS_REGION} cloudformation ${op} --stack-name ${STACK_NAME} --template-body ecs-fleet-cfn.json --parameters file://`pwd`/${STACK_PARAMETER_FILE} --capabilities CAPABILITY_IAM"
 }
 
 def waitForStackCreateUpdate() {
@@ -58,9 +62,9 @@ def isStackCreationSuccessful(status) {
   return status.equals("CREATE_COMPLETE") || status.equals("UPDATE_COMPLETE") || status.equals("UPDATE_COMPLETE_CLEANUP_IN_PROGRESS")
 }
 
-@NonCPS
 def getStackStatus() {
   def status = null
+  def cfnClient = new AmazonCloudFormationClient()
   
   try {
     def jsonSlurper = new JsonSlurper()
