@@ -7,7 +7,7 @@ node {
    }
    
    dir('jenkins-scripts') {
-    git url: https://github.com/vinayselvaraj/jenkins-scripts.git
+    git url: "https://github.com/vinayselvaraj/jenkins-scripts.git"
    }
    
    
