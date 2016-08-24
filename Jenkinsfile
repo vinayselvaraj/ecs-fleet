@@ -2,7 +2,14 @@ node {
 
    // Checkout stage
    stage 'Checkout'
-   checkout scm
+   dir('ecs-fleet') {
+     checkout scm
+   }
+   
+   dir('jenkins-scripts') {
+    git url: https://github.com/vinayselvaraj/jenkins-scripts.git
+   }
+   
    
    // Create/Update Stack stage
    stage 'Create/Update Stack'
