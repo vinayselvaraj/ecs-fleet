@@ -4,6 +4,7 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.Vpc;
+import software.amazon.awscdk.services.ec2.VpcProps;
 
 public class AppStack extends Stack {
     public AppStack(final Construct parent, final String id) {
@@ -13,6 +14,8 @@ public class AppStack extends Stack {
     public AppStack(final Construct parent, final String id, final StackProps props) {
         super(parent, id, props);
 
-        new Vpc(this, "ECS Fleet VPC");
+        new Vpc(this, "ECS Fleet VPC", VpcProps.builder()
+                .withNatGateways(0)
+                .build());
     }
 }
