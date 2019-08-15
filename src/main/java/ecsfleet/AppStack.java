@@ -22,6 +22,7 @@ public class AppStack extends Stack {
                 .withSubnetConfiguration(
                         Arrays.asList(SubnetConfiguration.builder()
                                 .withName("ECSFleetPublicSubnet")
+                                .withCidrMask(0)
                                 .withSubnetType(SubnetType.PUBLIC)
                                 .build()))
                 .build());
