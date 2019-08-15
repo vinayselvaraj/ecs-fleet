@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: openjdk11
+  pre_build:
+    commands:
+      - npm install -g aws-cdk
+  build:
+    commands:
+      - mvn clean package && cdk synthesize
+      - find .
+
+artifacts:
+  files:
+    - $CODEBUILD_SRC_DIR/cdk_out/ingester.template.json
+  discard-paths: yes
