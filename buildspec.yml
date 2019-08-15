@@ -11,8 +11,9 @@ phases:
     commands:
       - mvn clean package && cdk synthesize
       - find .
+      - cp cdk.out/AppStack.template.json template.json
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/cdk.out/AppStack.template.json
+    - template.json
   discard-paths: yes
