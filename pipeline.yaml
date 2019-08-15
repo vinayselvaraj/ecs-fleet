@@ -94,7 +94,7 @@ Resources:
             RoleArn: !GetAtt CloudFormationServiceRole.Arn
             Capabilities: CAPABILITY_IAM
             StackName: !Ref TargetStackName
-            TemplatePath: cdkOutput::template.json
+            TemplatePath: cdkOutput::AppStack.template.json
           RunOrder: '1'
 
 
