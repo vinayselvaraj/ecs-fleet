@@ -21,6 +21,7 @@ public class AppStack extends Stack {
         new Vpc(this, "ECS Fleet VPC", VpcProps.builder()
                 .withSubnetConfiguration(
                         Arrays.asList(SubnetConfiguration.builder()
+                                .withName("ECSFleetPublicSubnet")
                                 .withSubnetType(SubnetType.PUBLIC)
                                 .build()))
                 .build());
