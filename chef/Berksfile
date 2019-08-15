@@ -1,4 +1,0 @@
-source "https://supermarket.chef.io"
-
-cookbook 'openvpn', '~> 2.1.0'
-cookbook 'aws'    , '>= 2.7.2'
