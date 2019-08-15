@@ -1,4 +1,4 @@
-package com.myorg;
+package ecsfleet;
 
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.services.iam.IGrantable;

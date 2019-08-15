@@ -1,4 +1,4 @@
-package com.myorg;
+package ecsfleet;
 
 public class HelloConstructProps {
     private int bucketCount;
