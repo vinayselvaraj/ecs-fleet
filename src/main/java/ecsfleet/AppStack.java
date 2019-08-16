@@ -3,10 +3,15 @@ package ecsfleet;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
+import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.AddCapacityOptions;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
+import software.amazon.awscdk.services.ecs.EcsOptimizedAmi;
+import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancer;
+import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancerProps;
 
 import java.util.Arrays;
 
@@ -34,7 +39,8 @@ public class AppStack extends Stack {
                 .withVpc(vpc)
                 .build());
 
-        cluster.addCapacity("ClusterCapacity", AddCapacityOptions.builder()
+        // Create the ASG
+        AutoScalingGroup asg = new AutoScalingGroup(this, "ECS AutoScaling Group", AutoScalingGroupProps.builder()
                 .withInstanceType(InstanceType.of(
                         InstanceClass.COMPUTE5,
                         InstanceSize.LARGE))
@@ -43,6 +49,20 @@ public class AppStack extends Stack {
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .withSpotPrice("0.05")
+                .withMachineImage(new EcsOptimizedAmi())
+                .withVpc(vpc)
                 .build());
+
+        // Add the ASG to the cluster
+        cluster.addAutoScalingGroup(asg);
+
+        // Create the load balancer
+        new LoadBalancer(this, "ECS Load Balancer", LoadBalancerProps.builder()
+                .withCrossZone(true)
+                .withInternetFacing(true)
+                .withTargets(Arrays.asList(asg))
+                .withVpc(vpc)
+                .build());
+
     }
 }
