@@ -6,12 +6,13 @@ import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.ecs.AddCapacityOptions;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.EcsOptimizedAmi;
 import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancer;
 import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancerProps;
+import software.amazon.awscdk.services.elasticloadbalancingv2.*;
+import software.amazon.awscdk.services.elasticloadbalancingv2.Protocol;
 
 import java.util.Arrays;
 
@@ -56,12 +57,28 @@ public class AppStack extends Stack {
         // Add the ASG to the cluster
         cluster.addAutoScalingGroup(asg);
 
-        // Create the load balancer
-        new LoadBalancer(this, "ECS Load Balancer", LoadBalancerProps.builder()
-                .withCrossZone(true)
-                .withInternetFacing(true)
+        NetworkTargetGroup ntg = new NetworkTargetGroup(this, "NLB Target Group", NetworkTargetGroupProps.builder()
+                .withPort(80)
                 .withTargets(Arrays.asList(asg))
                 .withVpc(vpc)
+                .build());
+
+        // Create the load balancer
+        NetworkLoadBalancer nlb = new NetworkLoadBalancer(this, "ECS Load Balancer", NetworkLoadBalancerProps.builder()
+                .withCrossZoneEnabled(true)
+                .withInternetFacing(true)
+                .withVpc(vpc)
+                .withVpcSubnets(SubnetSelection.builder()
+                        .withSubnetType(SubnetType.PUBLIC)
+                        .build())
+                .build());
+
+        // Add the listener
+        nlb.addListener("TCP80", NetworkListenerProps.builder()
+                .withProtocol(Protocol.TCP)
+                .withPort(80)
+                .withDefaultTargetGroups(Arrays.asList(ntg))
+                .withLoadBalancer(nlb)
                 .build());
 
     }
