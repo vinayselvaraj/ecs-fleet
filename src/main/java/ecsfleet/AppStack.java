@@ -45,17 +45,5 @@ public class AppStack extends Stack {
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .build());
-//
-//
-//        new AutoScalingGroup(this, "ECS Fleet ASG", AutoScalingGroupProps.builder()
-//                .withMachineImage(new EcsOptimizedAmi())
-//                .withInstanceType(InstanceType.of(
-//                        InstanceClass.BURSTABLE3,
-//                        InstanceSize.NANO))
-//                .withVpc(vpc)
-//                .withVpcSubnets(SubnetSelection.builder()
-//                        .withSubnetType(SubnetType.PUBLIC)
-//                        .build())
-//                .build());
     }
 }
