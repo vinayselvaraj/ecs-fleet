@@ -57,18 +57,16 @@ public class AppStack extends Stack {
         // Add the ASG to the cluster
         cluster.addAutoScalingGroup(asg);
 
-        NetworkTargetGroup ntgTCP80 = new NetworkTargetGroup(this, "NLB Target Group", NetworkTargetGroupProps.builder()
+        NetworkTargetGroup ntgTCP80 = new NetworkTargetGroup(this, "NLB TCP:80 Target Group", NetworkTargetGroupProps.builder()
                 .withPort(80)
                 .withTargets(Arrays.asList(asg))
                 .withVpc(vpc)
-                .withTargetGroupName("TCP80")
                 .build());
 
-        NetworkTargetGroup ntgTCP443 = new NetworkTargetGroup(this, "NLB Target Group", NetworkTargetGroupProps.builder()
+        NetworkTargetGroup ntgTCP443 = new NetworkTargetGroup(this, "NLB TCP:443 Target Group", NetworkTargetGroupProps.builder()
                 .withPort(443)
                 .withTargets(Arrays.asList(asg))
                 .withVpc(vpc)
-                .withTargetGroupName("TCP443")
                 .build());
 
         // Create the load balancer
