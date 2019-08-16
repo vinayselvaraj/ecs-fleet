@@ -6,10 +6,9 @@ import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
+import software.amazon.awscdk.services.ecs.AddCapacityOptions;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
-import software.amazon.awscdk.services.ecs.EcsOptimizedAmi;
-import software.amazon.awscdk.services.ssm.StringParameter;
 
 import java.util.Arrays;
 
@@ -33,19 +32,30 @@ public class AppStack extends Stack {
                 .build());
 
         // Create ECS Cluster
-        new Cluster(this, "ECS Fleet Cluster", ClusterProps.builder()
+        Cluster cluster = new Cluster(this, "ECS Fleet Cluster", ClusterProps.builder()
                 .withVpc(vpc)
                 .build());
 
-        new AutoScalingGroup(this, "ECS Fleet ASG", AutoScalingGroupProps.builder()
-                .withMachineImage(new EcsOptimizedAmi())
+        cluster.addCapacity("ClusterCapacity", AddCapacityOptions.builder()
                 .withInstanceType(InstanceType.of(
                         InstanceClass.BURSTABLE3,
                         InstanceSize.NANO))
-                .withVpc(vpc)
+                .withDesiredCapacity(5)
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .build());
+//
+//
+//        new AutoScalingGroup(this, "ECS Fleet ASG", AutoScalingGroupProps.builder()
+//                .withMachineImage(new EcsOptimizedAmi())
+//                .withInstanceType(InstanceType.of(
+//                        InstanceClass.BURSTABLE3,
+//                        InstanceSize.NANO))
+//                .withVpc(vpc)
+//                .withVpcSubnets(SubnetSelection.builder()
+//                        .withSubnetType(SubnetType.PUBLIC)
+//                        .build())
+//                .build());
     }
 }
