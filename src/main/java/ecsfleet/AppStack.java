@@ -61,12 +61,14 @@ public class AppStack extends Stack {
                 .withPort(80)
                 .withTargets(Arrays.asList(asg))
                 .withVpc(vpc)
+                .withTargetGroupName("TCP80")
                 .build());
 
         NetworkTargetGroup ntgTCP443 = new NetworkTargetGroup(this, "NLB Target Group", NetworkTargetGroupProps.builder()
                 .withPort(443)
                 .withTargets(Arrays.asList(asg))
                 .withVpc(vpc)
+                .withTargetGroupName("TCP443")
                 .build());
 
         // Create the load balancer
