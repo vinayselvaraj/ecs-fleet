@@ -90,7 +90,7 @@ public class AppStack extends Stack {
         // Add the TCP:443 listener
         nlb.addListener("TCP443", NetworkListenerProps.builder()
                 .withProtocol(Protocol.TCP)
-                .withPort(80)
+                .withPort(443)
                 .withDefaultTargetGroups(Arrays.asList(ntgTCP443))
                 .withLoadBalancer(nlb)
                 .build());
