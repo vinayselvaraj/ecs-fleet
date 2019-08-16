@@ -45,6 +45,16 @@
         <!-- Respective AWS Construct Libraries -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
+            <artifactId>ssm</artifactId>
+            <version>1.0.0.DEVPREVIEW</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>autoscaling</artifactId>
+            <version>1.0.0.DEVPREVIEW</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
             <artifactId>ecs</artifactId>
             <version>1.0.0.DEVPREVIEW</version>
         </dependency>
