@@ -36,12 +36,13 @@ public class AppStack extends Stack {
 
         cluster.addCapacity("ClusterCapacity", AddCapacityOptions.builder()
                 .withInstanceType(InstanceType.of(
-                        InstanceClass.BURSTABLE3,
-                        InstanceSize.NANO))
+                        InstanceClass.COMPUTE5,
+                        InstanceSize.LARGE))
                 .withDesiredCapacity(5)
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
+                .withSpotPrice("0.05")
                 .build());
     }
 }
