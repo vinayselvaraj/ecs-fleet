@@ -3,8 +3,6 @@ package ecsfleet;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
-import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
-import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.AddCapacityOptions;
 import software.amazon.awscdk.services.ecs.Cluster;
