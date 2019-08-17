@@ -152,6 +152,10 @@ Resources:
             - cloudformation:DescribeStacks
             Resource: "*"
             Effect: Allow
+          - Action:
+            - ec2:Describe*
+            Resource: "*"
+            Effect: Allow
   
   CodePipelineServiceRole:
     Type: AWS::IAM::Role

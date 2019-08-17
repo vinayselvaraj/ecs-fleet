@@ -9,8 +9,8 @@ public class App {
 
         new AppStack(app, "AppStack", StackProps.builder()
                 .withEnv(Environment.builder()
-                        .withRegion("us-east-1")
-                        .withAccount("746094636937")
+                        .withRegion(System.getenv("CDK_DEFAULT_REGION"))
+                        .withAccount(System.getenv("CDK_DEFAULT_ACCOUNT"))
                         .build())
                 .build());
 
