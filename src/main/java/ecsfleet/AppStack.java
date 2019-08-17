@@ -44,8 +44,8 @@ public class AppStack extends Stack {
         // Create the ASG
         AutoScalingGroup asg = new AutoScalingGroup(this, "ECS AutoScaling Group", AutoScalingGroupProps.builder()
                 .withInstanceType(InstanceType.of(
-                        InstanceClass.BURSTABLE3,
-                        InstanceSize.SMALL))
+                        InstanceClass.BURSTABLE3_AMD,
+                        InstanceSize.LARGE))
                 .withDesiredCapacity(6)
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
