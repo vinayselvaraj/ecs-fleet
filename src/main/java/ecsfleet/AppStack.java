@@ -9,8 +9,6 @@ import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.EcsOptimizedAmi;
-import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancer;
-import software.amazon.awscdk.services.elasticloadbalancing.LoadBalancerProps;
 import software.amazon.awscdk.services.elasticloadbalancingv2.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.Protocol;
 
@@ -27,6 +25,7 @@ public class AppStack extends Stack {
 
         // Create VPC
         Vpc vpc = new Vpc(this, "ECS Fleet VPC", VpcProps.builder()
+                .withMaxAzs(99)
                 .withSubnetConfiguration(
                         Arrays.asList(SubnetConfiguration.builder()
                                 .withName("ECSFleetPublicSubnet")
@@ -34,6 +33,8 @@ public class AppStack extends Stack {
                                 .withSubnetType(SubnetType.PUBLIC)
                                 .build()))
                 .build());
+
+        System.out.println(vpc.getAvailabilityZones());
 
         // Create ECS Cluster
         Cluster cluster = new Cluster(this, "ECS Fleet Cluster", ClusterProps.builder()
