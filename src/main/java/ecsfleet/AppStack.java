@@ -44,13 +44,13 @@ public class AppStack extends Stack {
         // Create the ASG
         AutoScalingGroup asg = new AutoScalingGroup(this, "ECS AutoScaling Group", AutoScalingGroupProps.builder()
                 .withInstanceType(InstanceType.of(
-                        InstanceClass.COMPUTE5,
-                        InstanceSize.LARGE))
-                .withDesiredCapacity(5)
+                        InstanceClass.BURSTABLE3,
+                        InstanceSize.SMALL))
+                .withDesiredCapacity(6)
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
-                .withSpotPrice("0.05")
+                .withSpotPrice("0.02")
                 .withMachineImage(new EcsOptimizedAmi())
                 .withVpc(vpc)
                 .build());
