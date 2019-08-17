@@ -10,6 +10,7 @@ public class App {
         new AppStack(app, "AppStack", StackProps.builder()
                 .withEnv(Environment.builder()
                         .withRegion("us-east-1")
+                        .withAccount("746094636937")
                         .build())
                 .build());
 
