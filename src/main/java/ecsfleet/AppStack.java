@@ -39,8 +39,8 @@ public class AppStack extends Stack {
                 .withVpc(vpc)
                 .build());
 
-        // Create the ASG
-        AutoScalingGroup asg = new AutoScalingGroup(this, "ECS AutoScaling Group", AutoScalingGroupProps.builder()
+        // Add the ASG to the cluster
+        cluster.addCapacity("ECS AutoScaling Group", AddCapacityOptions.builder()
                 .withInstanceType(InstanceType.of(
                         InstanceClass.COMPUTE5,
                         InstanceSize.LARGE))
@@ -49,12 +49,10 @@ public class AppStack extends Stack {
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .withSpotPrice("0.05")
-                .withMachineImage(EcsOptimizedImage.amazonLinux2())
-                .withVpc(vpc)
                 .build());
 
-        // Add the ASG to the cluster
-        cluster.addAutoScalingGroup(asg);
+        // Get the AutoScaling Group
+        AutoScalingGroup asg = (AutoScalingGroup) cluster.getAutoscalingGroup();
 
         // TCP:80 Target Group
         NetworkTargetGroup ntgTCP80 = new NetworkTargetGroup(this, "NLB TCP:80 Target Group", NetworkTargetGroupProps.builder()
@@ -95,6 +93,7 @@ public class AppStack extends Stack {
                 .withDefaultTargetGroups(Arrays.asList(ntgTCP443))
                 .withLoadBalancer(nlb)
                 .build());
+
 
     }
 }
