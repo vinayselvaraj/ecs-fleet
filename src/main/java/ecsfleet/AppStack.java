@@ -40,7 +40,7 @@ public class AppStack extends Stack {
                 .build());
 
         // Add the ASG to the cluster
-        cluster.addCapacity("ECS AutoScaling Group", AddCapacityOptions.builder()
+        AutoScalingGroup asg = cluster.addCapacity("ECS AutoScaling Group", AddCapacityOptions.builder()
                 .withInstanceType(InstanceType.of(
                         InstanceClass.COMPUTE5,
                         InstanceSize.LARGE))
@@ -50,9 +50,6 @@ public class AppStack extends Stack {
                         .build())
                 .withSpotPrice("0.05")
                 .build());
-
-        // Get the AutoScaling Group
-        AutoScalingGroup asg = (AutoScalingGroup) cluster.getAutoscalingGroup();
 
         // TCP:80 Target Group
         NetworkTargetGroup ntgTCP80 = new NetworkTargetGroup(this, "NLB TCP:80 Target Group", NetworkTargetGroupProps.builder()
