@@ -6,9 +6,7 @@ import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.ecs.Cluster;
-import software.amazon.awscdk.services.ecs.ClusterProps;
-import software.amazon.awscdk.services.ecs.EcsOptimizedAmi;
+import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.Protocol;
 
@@ -51,7 +49,7 @@ public class AppStack extends Stack {
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .withSpotPrice("0.02")
-                .withMachineImage(new EcsOptimizedAmi())
+                .withMachineImage(EcsOptimizedImage.amazonLinux2(AmiHardwareType.ARM))
                 .withVpc(vpc)
                 .build());
 
