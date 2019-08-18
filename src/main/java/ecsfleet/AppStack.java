@@ -42,7 +42,7 @@ public class AppStack extends Stack {
         // Add the ASG to the cluster
         AutoScalingGroup asg = cluster.addCapacity("ECS AutoScaling Group", AddCapacityOptions.builder()
                 .withInstanceType(InstanceType.of(
-                        InstanceClass.COMPUTE5,
+                        InstanceClass.BURSTABLE3,
                         InstanceSize.LARGE))
                 .withDesiredCapacity(6)
                 .withVpcSubnets(SubnetSelection.builder()
