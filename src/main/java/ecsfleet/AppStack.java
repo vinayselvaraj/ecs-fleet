@@ -4,7 +4,6 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
-import software.amazon.awscdk.services.autoscaling.AutoScalingGroupProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.*;
@@ -51,6 +50,10 @@ public class AppStack extends Stack {
                 .withSpotPrice("0.05")
                 .build());
 
+        // Allow inbound HTTP & HTTPS from anywhere
+        asg.getConnections().allowFromAnyIpv4(Port.tcpRange(80, 80));
+        asg.getConnections().allowFromAnyIpv4(Port.tcpRange(443, 443));
+
         // TCP:80 Target Group
         NetworkTargetGroup ntgTCP80 = new NetworkTargetGroup(this, "NLB TCP:80 Target Group", NetworkTargetGroupProps.builder()
                 .withPort(80)
@@ -90,7 +93,6 @@ public class AppStack extends Stack {
                 .withDefaultTargetGroups(Arrays.asList(ntgTCP443))
                 .withLoadBalancer(nlb)
                 .build());
-
 
     }
 }
