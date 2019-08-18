@@ -50,6 +50,9 @@ public class AppStack extends Stack {
                 .withSpotPrice("0.05")
                 .build());
 
+        // Allow all traffic from the ASG peers
+        asg.getConnections().allowFrom(asg.getConnections(), Port.allTraffic());
+
         // Allow inbound HTTP & HTTPS from anywhere
         asg.getConnections().allowFromAnyIpv4(Port.tcpRange(80, 80));
         asg.getConnections().allowFromAnyIpv4(Port.tcpRange(443, 443));
