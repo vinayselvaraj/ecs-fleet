@@ -42,14 +42,14 @@ public class AppStack extends Stack {
         // Create the ASG
         AutoScalingGroup asg = new AutoScalingGroup(this, "ECS AutoScaling Group", AutoScalingGroupProps.builder()
                 .withInstanceType(InstanceType.of(
-                        InstanceClass.ARM1,
+                        InstanceClass.COMPUTE5,
                         InstanceSize.LARGE))
                 .withDesiredCapacity(6)
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
                 .withSpotPrice("0.02")
-                .withMachineImage(EcsOptimizedImage.amazonLinux2(AmiHardwareType.ARM))
+                .withMachineImage(EcsOptimizedImage.amazonLinux2())
                 .withVpc(vpc)
                 .build());
 
