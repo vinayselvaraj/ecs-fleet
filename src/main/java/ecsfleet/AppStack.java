@@ -48,7 +48,7 @@ public class AppStack extends Stack {
                 .withVpcSubnets(SubnetSelection.builder()
                         .withSubnetType(SubnetType.PUBLIC)
                         .build())
-                .withSpotPrice("0.02")
+                .withSpotPrice("0.05")
                 .withMachineImage(EcsOptimizedImage.amazonLinux2())
                 .withVpc(vpc)
                 .build());
